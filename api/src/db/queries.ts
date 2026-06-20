@@ -12,17 +12,17 @@ export interface DbExecutor {
 }
 
 /** Adapter para Cloudflare D1 */
-export function createD1Executor(db: D1Database): DbExecutor {
+export function createD1Executor(db: any): DbExecutor {
   return {
     async query<T>(sql: string, params: unknown[] = []): Promise<T[]> {
       const stmt = db.prepare(sql).bind(...params);
-      const result = await stmt.all<T>();
-      return result.results ?? [];
+      const result = await stmt.all();
+      return (result.results ?? []) as T[];
     },
     async queryOne<T>(sql: string, params: unknown[] = []): Promise<T | null> {
       const stmt = db.prepare(sql).bind(...params);
-      const result = await stmt.first<T>();
-      return result ?? null;
+      const result = await stmt.first();
+      return (result ?? null) as T | null;
     },
   };
 }
@@ -32,28 +32,62 @@ export function createD1Executor(db: D1Database): DbExecutor {
 export interface MunicipioRow {
   codigo_ibge: number;
   nome: string;
-  uf: string;
-  regiao: string;
-  populacao: number | null;
-  latitude: number | null;
-  longitude: number | null;
+  codigo_grande_regiao: number;
+  nome_grande_regiao: string;
+  codigo_uf: number;
+  sigla_uf: string;
+  nome_uf: string;
+  regiao_metropolitana: string | null;
+  codigo_mesorregiao: number;
+  nome_mesorregiao: string;
+  codigo_microrregiao: number;
+  nome_microrregiao: string;
+  codigo_regiao_imediata: number;
+  nome_regiao_imediata: string;
+  municipio_sede_regiao_imediata: string;
+  codigo_regiao_intermediaria: number;
+  nome_regiao_intermediaria: string;
+  municipio_sede_regiao_intermediaria: string;
+  codigo_concentracao_urbana: number | null;
+  nome_concentracao_urbana: string | null;
+  tipo_concentracao_urbana: string | null;
+  codigo_arranjo_populacional: number | null;
+  nome_arranjo_populacional: string | null;
+  hierarquia_urbana: string;
+  hierarquia_urbana_resumida: string;
+  codigo_regiao_rural: number;
+  nome_regiao_rural: string;
+  classificacao_nucleo_rural: string;
+  amazonia_legal: string;
+  semiarido: string;
+  cidade_regiao_sp: string;
 }
 
 export interface PibRow {
+  id: number;
   codigo_ibge: number;
   ano: number;
-  pib_corrente: number | null;
-  pib_constante: number | null;
-  pib_per_capita: number | null;
   vab_agropecuaria: number | null;
   vab_industria: number | null;
   vab_servicos: number | null;
-  vab_adm_publica: number | null;
+  vab_administracao_publica: number | null;
+  vab_total: number | null;
+  impostos_liquidos: number | null;
+  pib: number;
+  pib_per_capita: number;
+  atividade_maior_vab: string | null;
+  atividade_segundo_maior_vab: string | null;
+  atividade_terceiro_maior_vab: string | null;
+  pib_real: number | null;
+  pib_per_capita_real: number | null;
 }
 
 export interface DeflatorRow {
   ano: number;
-  fator: number;
+  indice: number;
+  variacao_pct: number | null;
+  fonte: string;
+  base_ano: number;
 }
 
 export interface CountRow {
@@ -64,7 +98,7 @@ export interface CountRow {
 
 export async function getMunicipio(db: DbExecutor, codigoIbge: number) {
   return db.queryOne<MunicipioRow>(
-    `SELECT * FROM municipios WHERE codigo_ibge = ?`,
+    `SELECT * FROM municipio WHERE codigo_ibge = ?`,
     [codigoIbge]
   );
 }
@@ -77,7 +111,7 @@ export async function getMunicipios(
   const params: unknown[] = [];
 
   if (filters.uf) {
-    conditions.push(`uf = ?`);
+    conditions.push(`sigla_uf = ?`);
     params.push(filters.uf.toUpperCase());
   }
   if (filters.nome) {
@@ -85,7 +119,7 @@ export async function getMunicipios(
     params.push(`%${filters.nome}%`);
   }
   if (filters.regiao) {
-    conditions.push(`regiao = ?`);
+    conditions.push(`nome_grande_regiao = ?`);
     params.push(filters.regiao);
   }
 
@@ -93,7 +127,7 @@ export async function getMunicipios(
 
   // Count total
   const countResult = await db.queryOne<CountRow>(
-    `SELECT COUNT(*) as total FROM municipios ${where}`,
+    `SELECT COUNT(*) as total FROM municipio ${where}`,
     params
   );
   const total = countResult?.total ?? 0;
@@ -101,7 +135,7 @@ export async function getMunicipios(
   // Paginated query
   const offset = (filters.pagina - 1) * filters.porPagina;
   const dados = await db.query<MunicipioRow>(
-    `SELECT * FROM municipios ${where} ORDER BY nome LIMIT ? OFFSET ?`,
+    `SELECT * FROM municipio ${where} ORDER BY nome LIMIT ? OFFSET ?`,
     [...params, filters.porPagina, offset]
   );
 
@@ -146,12 +180,12 @@ export async function getRankingPib(
   ano: number,
   opts: { uf?: string; limite: number; constante: boolean }
 ) {
-  const valorCol = opts.constante ? 'pib_constante' : 'pib_corrente';
+  const valorCol = opts.constante ? 'pib_real' : 'pib';
   const conditions: string[] = [`p.ano = ?`];
   const params: unknown[] = [ano];
 
   if (opts.uf) {
-    conditions.push(`m.uf = ?`);
+    conditions.push(`m.sigla_uf = ?`);
     params.push(opts.uf.toUpperCase());
   }
 
@@ -160,7 +194,7 @@ export async function getRankingPib(
   return db.query<PibRow & MunicipioRow>(
     `SELECT p.*, m.*
      FROM pib_municipal p
-     JOIN municipios m ON p.codigo_ibge = m.codigo_ibge
+     JOIN municipio m ON p.codigo_ibge = m.codigo_ibge
      WHERE ${conditions.join(' AND ')}
      ORDER BY p.${valorCol} DESC
      LIMIT ?`,
@@ -175,13 +209,13 @@ export async function getCompararPib(
 ) {
   const placeholders = codigos.map(() => '?').join(',');
   return db.query<MunicipioRow>(
-    `SELECT * FROM municipios WHERE codigo_ibge IN (${placeholders})`,
+    `SELECT * FROM municipio WHERE codigo_ibge IN (${placeholders})`,
     codigos
   );
 }
 
 export async function getDeflatores(db: DbExecutor) {
   return db.query<DeflatorRow>(
-    `SELECT * FROM deflator_ipca ORDER BY ano`
+    `SELECT * FROM deflator ORDER BY ano`
   );
 }

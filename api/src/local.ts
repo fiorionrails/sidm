@@ -82,7 +82,7 @@ app.get('/graphiql', (c) => {
     populacao
     pib(anoInicio: 2018, anoFim: 2023) {
       ano
-      pibConstante
+      pibReal
       pibPerCapita
     }
   }

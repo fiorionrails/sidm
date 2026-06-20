@@ -5,7 +5,7 @@
  * Cada resolver recebe o DbExecutor via context.
  */
 
-import type { DbExecutor, MunicipioRow, PibRow } from '../db/queries';
+import type { DbExecutor, MunicipioRow, PibRow, DeflatorRow } from '../db/queries';
 import {
   getMunicipio,
   getMunicipios,
@@ -21,25 +21,51 @@ function mapMunicipio(row: MunicipioRow) {
   return {
     codigoIbge: row.codigo_ibge,
     nome: row.nome,
-    uf: row.uf,
-    regiao: row.regiao,
-    populacao: row.populacao,
-    latitude: row.latitude,
-    longitude: row.longitude,
+    codigoUf: row.codigo_uf,
+    siglaUf: row.sigla_uf,
+    nomeUf: row.nome_uf,
+    regiaoMetropolitana: row.regiao_metropolitana,
+    nomeMesorregiao: row.nome_mesorregiao,
+    nomeMicrorregiao: row.nome_microrregiao,
+    nomeRegiaoImediata: row.nome_regiao_imediata,
+    municipioSedeRegiaoImediata: row.municipio_sede_regiao_imediata,
+    nomeRegiaoIntermediaria: row.nome_regiao_intermediaria,
+    municipioSedeRegiaoIntermediaria: row.municipio_sede_regiao_intermediaria,
+    nomeConcentracaoUrbana: row.nome_concentracao_urbana,
+    tipoConcentracaoUrbana: row.tipo_concentracao_urbana,
+    nomeArranjoPopulacional: row.nome_arranjo_populacional,
+    hierarquiaUrbana: row.hierarquia_urbana,
+    hierarquiaUrbanaResumida: row.hierarquia_urbana_resumida,
+    nomeRegiaoRural: row.nome_regiao_rural,
+    classificacaoNucleoRural: row.classificacao_nucleo_rural,
+    amazoniaLegal: row.amazonia_legal,
+    semiarido: row.semiarido,
+    cidadeRegiaoSp: row.cidade_regiao_sp
   };
 }
 
 function mapPib(row: PibRow) {
   return {
     ano: row.ano,
-    pibCorrente: row.pib_corrente,
-    pibConstante: row.pib_constante,
+    pibCorrente: row.pib,
+    pibReal: row.pib_real,
     pibPerCapita: row.pib_per_capita,
+    pibPerCapitaReal: row.pib_per_capita_real,
     vabAgropecuaria: row.vab_agropecuaria,
     vabIndustria: row.vab_industria,
     vabServicos: row.vab_servicos,
-    vabAdmPublica: row.vab_adm_publica,
+    vabAdmPublica: row.vab_administracao_publica,
   };
+}
+
+function mapDeflator(row: DeflatorRow) {
+  return {
+    ano: row.ano,
+    indice: row.indice,
+    variacaoPct: row.variacao_pct,
+    fonte: row.fonte,
+    baseAno: row.base_ano
+  }
 }
 
 // ─── Context type ────────────────────────────────────────────────────
@@ -105,7 +131,7 @@ export const resolvers = {
         constante: args.constante ?? false,
       });
 
-      const valorCol = (args.constante ?? false) ? 'pib_constante' : 'pib_corrente';
+      const valorCol = (args.constante ?? false) ? 'pib_real' : 'pib';
 
       return rows.map((row, index) => ({
         posicao: index + 1,
@@ -137,7 +163,7 @@ export const resolvers = {
 
     deflatores: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
       const rows = await getDeflatores(context.db);
-      return rows.map((r) => ({ ano: r.ano, fator: r.fator }));
+      return rows.map(mapDeflator);
     },
   },
 
