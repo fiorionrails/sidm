@@ -25,29 +25,28 @@ logger = logging.getLogger(__name__)
 SIDRA_BASE = "https://apisidra.ibge.gov.br/values"
 
 # Variáveis de interesse
-VARIAVEIS = "37,38,39,40,41,513"
+VARIAVEIS = "37,513,517,6575,525"
 
 # Períodos: 2002-2023
 PERIODOS_ANTIGOS = "2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021"
 PERIODOS_NOVOS = "2022,2023"
 
 
-def _baixar_lote(periodos: str, tentativa: int = 1) -> list[dict]:
-    """Baixa dados da tabela 5938 para um conjunto de períodos."""
+def _baixar_lote(periodo: int, tentativa: int = 1) -> list[dict]:
+    """Baixa dados da tabela 5938 para um ano específico."""
     url = (
         f"{SIDRA_BASE}"
         f"/t/5938"
         f"/n6/all"
         f"/v/{VARIAVEIS}"
-        f"/p/{periodos}"
-        f"/d/v37%200,v38%200,v39%200,v40%200,v41%200,v513%202"
+        f"/p/{periodo}"
+        f"/d/v37%200,v513%200,v517%200,v6575%200,v525%200"
     )
-    logger.info("Requisitando SIDRA: períodos=%s (tentativa %d)", periodos, tentativa)
+    logger.info("Requisitando SIDRA: ano=%s (tentativa %d)", periodo, tentativa)
     try:
         resp = requests.get(url, timeout=300)
         resp.raise_for_status()
         dados = resp.json()
-        # A primeira linha é o cabeçalho
         if dados and isinstance(dados[0], dict):
             header = dados[0]
             if "V" in header and header["V"] == "Valor":
@@ -58,7 +57,7 @@ def _baixar_lote(periodos: str, tentativa: int = 1) -> list[dict]:
         if tentativa < 3:
             logger.warning("Erro na requisição, tentando novamente em 10s: %s", e)
             time.sleep(10)
-            return _baixar_lote(periodos, tentativa + 1)
+            return _baixar_lote(periodo, tentativa + 1)
         raise
 
 
@@ -98,11 +97,10 @@ def _parse_registros(registros: list[dict]) -> pd.DataFrame:
     # Mapear código da variável para nome da coluna
     var_map = {
         "37": "pib_corrente",
-        "38": "vab_agropecuaria",
-        "39": "vab_industria",
-        "40": "vab_servicos",
-        "41": "vab_adm_publica",
-        "513": "pib_per_capita",
+        "513": "vab_agropecuaria",
+        "517": "vab_industria",
+        "6575": "vab_servicos",
+        "525": "vab_adm_publica",
     }
     df["coluna"] = df["variavel"].map(var_map)
     df = df.dropna(subset=["coluna"])
@@ -137,20 +135,14 @@ def extrair_pib() -> pd.DataFrame:
     """
     logger.info("Iniciando extração do PIB municipal (SIDRA tabela 5938)...")
 
-    # Baixar em dois lotes para evitar timeout
     registros = []
-
-    # Lote 1: 2002-2021 (tem VAB)
-    r1 = _baixar_lote(PERIODOS_ANTIGOS)
-    logger.info("Lote 2002-2021: %d registros brutos", len(r1))
-    registros.extend(r1)
-
-    time.sleep(2)
-
-    # Lote 2: 2022-2023 (só PIB e per capita)
-    r2 = _baixar_lote(PERIODOS_NOVOS)
-    logger.info("Lote 2022-2023: %d registros brutos", len(r2))
-    registros.extend(r2)
+    
+    anos = list(range(2002, 2024))
+    for ano in anos:
+        r = _baixar_lote(ano)
+        logger.info("Ano %d: %d registros brutos", ano, len(r))
+        registros.extend(r)
+        time.sleep(1) # delay para não sobrecarregar a API
 
     logger.info("Total de registros brutos: %d", len(registros))
 

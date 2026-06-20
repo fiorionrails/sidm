@@ -1,0 +1,21 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8787:8787"
+    volumes:
+      - ./data:/app/data:ro
+    environment:
+      - NODE_ENV=development
+      - DB_PATH=/app/data/municipios.db
+
+  etl:
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data
+    profiles:
+      - etl  # só roda com: docker compose --profile etl run etl
