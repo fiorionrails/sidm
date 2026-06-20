@@ -84,12 +84,11 @@ app.get('/graphiql', (c) => {
 query ExemploPIB {
   municipio(codigoIbge: 3534708) {
     nome
-    uf
-    populacao
+    nomeRegiaoImediata
     pib(anoInicio: 2018, anoFim: 2023) {
       ano
-      pibConstante
-      pibPerCapita
+      pibReal
+      pibPerCapitaReal
     }
   }
 }
