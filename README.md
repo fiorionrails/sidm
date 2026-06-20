@@ -1,35 +1,39 @@
 # SIDM — Sistema Integrado de Dados Municipais
 
-> API GraphQL que centraliza dados públicos dos municípios brasileiros a partir de fontes oficiais (IBGE, SICONFI, DATASUS).
+> API GraphQL que centraliza dados públicos dos municípios brasileiros a partir de fontes oficiais (IBGE), focada em performance e consumo simplificado.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## O que é
 
-O SIDM é uma infraestrutura open source que coleta, normaliza e expõe dados públicos municipais em um endpoint GraphQL único. Os dados vêm de fontes oficiais e passam por um pipeline de ETL automatizado que trata inconsistências, deflaciona séries monetárias e padroniza formatos.
+O SIDM é uma infraestrutura open source que expõe dados públicos municipais em um endpoint GraphQL único. Em vez de complexos processos de ETL on-the-fly, a API é alimentada por um banco de dados SQLite oficial e pré-compilado (`municipia.db`), garantindo velocidade e confiabilidade (sem limites de requisição de terceiros).
 
 **Módulos disponíveis:**
 
 | Módulo | Fonte | Período | Status |
 |---|---|---|---|
-| PIB Municipal | IBGE | 2002–2023 | ✅ Disponível |
-| População | IBGE | — | 🔜 Em breve |
-| Comércio Exterior | Comex Stat | — | 📋 Planejado |
+| PIB Municipal e Deflator | IBGE | 2002–2023 | ✅ Disponível |
+| População | IBGE | — | ⏳ Em breve |
+| Comércio Exterior | Comex Stat | — | 📅 Planejado |
+
+## Metodologia de Deflacionamento
+O PIB constante (Real) dos municípios é calculado utilizando o **Deflator Implícito do PIB** (Contas Nacionais Anuais do IBGE, base 2021=100). Como não existe índice de volume oficial municipal, esta metodologia adapta os valores nominais isolando a variação de preços em escala nacional.
 
 ## Quick Start
 
 ```bash
 # 1. Clone o repositório
 git clone https://github.com/fiorionrails/sidm.git
-cd sidm/api
+cd sidm
 
-# 2. Instale as dependências
+# 2. Instale as dependências da API
+cd api
 npm install
 
-# 3. Rode a API
-npm run dev
+# 3. Rode a API localmente
+npm run dev:local
 
-# GraphQL Playground → http://localhost:8787/graphiql
+# GraphQL Playground ficará disponível em http://localhost:8787/graphiql
 ```
 
 ## Exemplo de Query
@@ -38,12 +42,12 @@ npm run dev
 query {
   municipio(codigoIbge: 3534708) {
     nome
-    uf
-    populacao
+    nomeRegiaoImediata
     pib(anoInicio: 2018, anoFim: 2023) {
       ano
-      pibConstante
-      pibPerCapita
+      pibCorrente
+      pibReal
+      pibPerCapitaReal
     }
   }
 }
@@ -52,35 +56,26 @@ query {
 ## Arquitetura
 
 ```
-Fontes Oficiais → ETL (Python) → SQLite → API GraphQL (Hono + graphql-yoga)
+SQLite (municipia.db) → API GraphQL (Hono + graphql-yoga)
 ```
 
-- **ETL:** Python (pandas) — extrai, transforma, deflaciona e carrega no SQLite
-- **API:** TypeScript com Hono + graphql-yoga — roda em Cloudflare Workers (edge)
-- **Banco:** SQLite (Cloudflare D1 em produção, arquivo local em dev)
+- **API:** TypeScript com Hono + graphql-yoga. Suporta deploy imediato em Cloudflare Workers (edge).
+- **Banco de Dados:** SQLite estático embutido na aplicação (`data/municipios.db`) com queries robustas utilizando o Drizzle ORM / Better-SQLite3.
 
 ## Estrutura do Projeto
 
 ```
 sidm/
 ├── api/          # API GraphQL (TypeScript/Hono)
-├── etl/          # Pipeline de dados (Python)
-├── data/         # SQLite gerado pelo ETL
-└── contexto/     # Documentação acadêmica
+│   ├── src/      # Resolvers e Schema GraphQL
+│   └── package.json
+├── data/         # Banco de dados SQLite estático
+└── contexto/     # Documentação acadêmica e material complementar
 ```
-
-## Contribuindo
-
-Veja [CONTRIBUTING.md](CONTRIBUTING.md) para instruções detalhadas.
-
-Cada novo módulo de dados = uma PR com:
-1. Script ETL em `etl/fontes/`
-2. Novos types/resolvers em `api/src/`
-3. Testes
 
 ## Contexto Acadêmico
 
-Este projeto faz parte de pesquisa apresentada no CONIC — Congresso Nacional de Iniciação Científica. O SIDM é a camada de infraestrutura do ecossistema que inclui o **OBDOu** (Observatório de Dados de Ourinhos), agente de inteligência artificial que consome esta API para responder perguntas sobre dados municipais.
+Este projeto faz parte de pesquisa em andamento. O SIDM é a camada de infraestrutura do ecossistema que inclui o **OBDOu** (Observatório de Dados de Ourinhos), um agente de inteligência artificial construído para consumir esta API e responder perguntas com dados factuais em linguagem natural, mitigando riscos de desinformação pública.
 
 ## Licença
 
