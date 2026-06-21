@@ -114,7 +114,7 @@ nav { position: fixed; top: 0; width: 100%; padding: 1.5rem 0; z-index: 100; bac
 .markdown-content img { max-width: 100%; height: auto; border-radius: 12px; margin: 2rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
 /* Hamburger Menu Styles */
-.nav-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.nav-header { display: flex; justify-content: space-between; align-items: center; width: auto; }
 .nav-toggle { display: none; }
 .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 10px; z-index: 101; }
 .hamburger .bar { width: 25px; height: 3px; background-color: var(--text-main); border-radius: 3px; transition: all 0.3s ease; }
@@ -123,6 +123,7 @@ nav { position: fixed; top: 0; width: 100%; padding: 1.5rem 0; z-index: 100; bac
 @media (max-width: 768px) {
   nav { padding: 1rem 0; }
   .nav-content { flex-direction: column; gap: 0; align-items: flex-start; }
+  .nav-header { width: 100%; }
   
   .hamburger { display: flex; }
   .cta-group { 
