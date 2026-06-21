@@ -6,4 +6,4 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "sidm-db"
-database_id = "local"
+database_id = "670c2066-ce6f-4fd0-bf96-fc8f5b6ba967"
