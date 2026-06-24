@@ -1,0 +1,86 @@
+/* ============================================================
+   SIDM — Sistema Integrado de Dados Municipais
+   tokens.css — paleta Brasil (verde-mata · ouro · azul-noite).
+   Cores do Brasil em tom sóbrio/moderno, não bandeira literal.
+   Regra: componentes usam var(--brand-*), nunca hex solto.
+   Todos os pares texto/fundo medidos em WCAG 2.x AA.
+   ============================================================ */
+
+:root {
+  /* ---- Marca ---- */
+  --brand-primary:          #0B5E37;  /* verde-mata. 7.86:1 vs branco (AAA) */
+  --brand-primary-strong:   #084A2C;  /* verde p/ texto sobre claro. 10.4:1 */
+  --brand-primary-contrast: #FFFFFF;  /* texto sobre fill verde. 7.86:1 */
+
+  --brand-accent:           #8A6400;  /* ouro contido — texto/detalhe. 5.38:1 */
+  --brand-accent-bright:    #F2B807;  /* ouro vivo — hub do símbolo, destaque sobre escuro */
+
+  /* ---- Neutros (≈80% da área; levíssima temperatura verde/fria) ---- */
+  --brand-surface:          #FFFFFF;
+  --brand-surface-muted:    #F1F5F3;
+  --brand-surface-sunken:   #E7EDEA;
+  --brand-border:           #DCE5E0;
+  --brand-text:             #10241A;  /* tinta verde-escura. 16.3:1 */
+  --brand-text-muted:       #4E5E57;  /* 6.86:1 */
+
+  /* ---- Semânticas (distintas da marca; sempre com ícone, nunca só cor) ---- */
+  --brand-success:          #0E7C57;  /* verde-teal, difere do verde-marca. 5.20:1 */
+  --brand-warning:          #A8521E;  /* laranja-queimado, difere do ouro. 5.40:1 */
+  --brand-error:            #BE2F26;  /* 5.79:1 */
+  --brand-info:             var(--brand-primary);
+
+  /* ---- Tipografia ---- */
+  --brand-font-display: "Space Grotesk", "Hanken Grotesk", system-ui, sans-serif;
+  --brand-font-body:    "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --brand-font-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --brand-scale-base: 1rem;
+  --brand-leading-tight: 1.15;
+  --brand-leading-body: 1.6;
+  --brand-tracking-display: -0.01em;
+
+  /* ---- Movimento ---- */
+  --brand-ease:      cubic-bezier(0.4, 0, 0.2, 1);
+  --brand-ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --brand-dur-fast:  120ms;
+  --brand-dur-med:   240ms;
+  --brand-dur-slow:  480ms;
+
+  /* ---- Forma ---- */
+  --brand-radius-sm: 6px;
+  --brand-radius-md: 10px;
+  --brand-radius-lg: 16px;
+}
+
+/* Tema escuro — ancorado em azul-noite (o azul da bandeira entra aqui) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-primary:          #46C97E;  /* verde clareado. 8.44:1 vs surface */
+    --brand-primary-strong:   #7FE3A8;
+    --brand-primary-contrast: #06231A;  /* texto escuro sobre fill verde claro */
+    --brand-primary-fill:     #0E7C4A;  /* fill de botão; texto branco = AA */
+
+    --brand-accent:           #F2B807;  /* ouro vivo. 9.90:1 vs azul-noite */
+    --brand-accent-bright:    #F2B807;
+
+    --brand-surface:          #0A1633;  /* azul-noite */
+    --brand-surface-muted:    #111E40;
+    --brand-surface-sunken:   #060E22;
+    --brand-border:           #23305A;
+    --brand-text:             #E8EFEA;  /* 15.3:1 */
+    --brand-text-muted:       #9BB0AE;  /* 7.84:1 */
+
+    --brand-success:          #46C97E;
+    --brand-warning:          #E59B4A;
+    --brand-error:            #E8736B;
+  }
+}
+
+[data-theme="dark"] {
+  --brand-primary: #46C97E; --brand-primary-contrast: #06231A;
+  --brand-accent: #F2B807; --brand-surface: #0A1633; --brand-surface-muted: #111E40;
+  --brand-text: #E8EFEA; --brand-text-muted: #9BB0AE; --brand-border: #23305A;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --brand-dur-fast: 0ms; --brand-dur-med: 0ms; --brand-dur-slow: 0ms; }
+}

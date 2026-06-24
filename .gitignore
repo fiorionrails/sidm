@@ -24,3 +24,10 @@ data/*.db
 # OS
 .DS_Store
 Thumbs.db
+
+# Data & Temp
+.tmp/
+.agents/
+*.xlsx
+*.db
+data/dump.sql
