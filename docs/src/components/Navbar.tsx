@@ -24,7 +24,8 @@ export default function Navbar() {
         <div className="nav-links">
           <Link href="/docs" onClick={() => setIsOpen(false)}>Manual</Link>
           <Link href="/artigo" onClick={() => setIsOpen(false)}>Artigos</Link>
-          <a href="https://sidm-api.cfiorimartins.workers.dev/graphiql" target="_blank" rel="noreferrer" onClick={() => setIsOpen(false)}>
+          <Link href="/patch-notes" onClick={() => setIsOpen(false)}>Patch Notes</Link>
+          <a href="https://sidm-api.fiorionrails.workers.dev/graphiql" target="_blank" rel="noreferrer" onClick={() => setIsOpen(false)}>
             GraphQL API
           </a>
         </div>

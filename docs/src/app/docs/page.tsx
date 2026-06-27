@@ -14,7 +14,7 @@ export default function Docs() {
         </div>
         <div className="code-block" style={{ padding: '2rem', border: '1px solid var(--bp-border-main)' }}>
           <div className="code-header">/// ENDPOINT HTTPS</div>
-          <pre><code>https://sidm-api.cfiorimartins.workers.dev/graphql</code></pre>
+          <pre><code>https://sidm-api.fiorionrails.workers.dev/graphql</code></pre>
         </div>
       </div>
 

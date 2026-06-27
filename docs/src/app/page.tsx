@@ -34,7 +34,7 @@ export default function Home() {
             A API GraphQL com a topologia completa de 5.570 municípios e histórico de PIB deflacionado pelo IBGE (2002-2023).
           </motion.p>
           <motion.div className="btn-group" variants={fadeUp}>
-            <a href="https://sidm-api.cfiorimartins.workers.dev/graphiql" target="_blank" rel="noreferrer" className="btn btn-primary">
+            <a href="https://sidm-api.fiorionrails.workers.dev/graphiql" target="_blank" rel="noreferrer" className="btn btn-primary">
               Acessar GraphQL
             </a>
             <a href="/docs" className="btn btn-secondary">

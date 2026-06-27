@@ -40,7 +40,7 @@ export default function RootLayout({
             <Navbar />
             {children}
             <footer style={{ padding: '2rem', borderTop: '1px solid var(--bp-border-main)', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--bp-text-muted)', textTransform: 'uppercase' }}>
-              SIDM © 2026 — INFRAESTRUTURA DE DADOS ABERTA
+              SIDM © 2026 — INFRAESTRUTURA DE DADOS ABERTA — v0.1.0
             </footer>
           </div>
         </SmoothScroll>
