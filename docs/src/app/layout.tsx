@@ -23,7 +23,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SIDM — Cartografia de Dados Municipais",
+  title: "Sistema Integrado de Dados Municipais",
   description: "A planta baixa dos dados municipais do Brasil.",
 };
 
