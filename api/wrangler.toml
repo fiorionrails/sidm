@@ -1,5 +1,5 @@
 name = "sidm-api"
-account_id = "32bfc61a13bba1ca20035356a20b2d91"
+account_id = "32bfc61a13bba1ca28035356a20b2491"
 main = "src/index.ts"
 compatibility_date = "2024-12-30"
 compatibility_flags = ["nodejs_compat"]
