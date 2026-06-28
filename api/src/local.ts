@@ -54,7 +54,7 @@ app.on(['GET', 'POST'], '/graphql', async (c) => {
     graphqlEndpoint: '/graphql',
     landingPage: false,
   });
-  return yoga.handle(c.req.raw, c.env);
+  return (yoga as any).handle(c.req.raw, c.env);
 });
 
 // GraphiQL route handler (same as in index.ts)

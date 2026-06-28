@@ -136,7 +136,7 @@ export const resolvers = {
       return rows.map((row, index) => ({
         posicao: index + 1,
         municipio: mapMunicipio(row),
-        valor: (row as Record<string, unknown>)[valorCol] as number,
+        valor: (row as unknown as Record<string, unknown>)[valorCol] as number,
       }));
     },
 
