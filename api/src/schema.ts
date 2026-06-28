@@ -38,7 +38,7 @@ export const typeDefs = /* GraphQL */ `
 
   """
   PIB Municipal — fonte IBGE (2002–2023).
-  Valores monetários em R$ mil. pibConstante é deflacionado pelo IPCA (base 2023).
+  Valores monetários em R$ mil. O PIB Real é deflacionado pelo Deflator Implícito do PIB (base 2021).
   """
   type PibMunicipal {
     ano: Int!

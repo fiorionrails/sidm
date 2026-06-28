@@ -16,6 +16,8 @@ const staggerContainer: Variants = {
   }
 };
 
+
+
 export default function Home() {
   return (
     <main>
@@ -26,7 +28,11 @@ export default function Home() {
         variants={staggerContainer}
       >
         <div className="hero-content">
-          <motion.h1 className="hero-title" variants={fadeUp}>
+          <motion.div className="hero-badge" variants={fadeUp}>
+            <span className="badge-highlight">SIDM /</span>
+            <span className="badge-text">Sistema Integrado de Dados Municipais</span>
+          </motion.div>
+          <motion.h1 className="hero-title text-gradient" variants={fadeUp}>
             Planta Baixa dos<br/>
             Dados Municipais
           </motion.h1>
@@ -48,7 +54,6 @@ export default function Home() {
           <pre><code>{`query BlueprintSP {
   municipio(codigoIbge: 3550308) {
     nome
-    populacao
     pib(anoInicio: 2020) {
       ano
       pibReal

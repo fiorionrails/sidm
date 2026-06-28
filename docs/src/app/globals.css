@@ -130,6 +130,38 @@ nav {
   color: var(--bp-accent-gold);
 }
 
+/* ============================================================
+   Micro-interactions & Gradients
+   ============================================================ */
+.text-gradient {
+  background: linear-gradient(135deg, var(--bp-text) 0%, var(--bp-accent-green) 50%, var(--bp-accent-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0;
+  margin-bottom: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.badge-highlight {
+  font-weight: 700;
+  color: var(--bp-accent-green);
+}
+
+.badge-text {
+  color: var(--bp-text-muted);
+}
+
 /* Hero "Technical Manual" */
 .hero {
   display: grid;
@@ -189,8 +221,8 @@ nav {
 }
 
 .btn-primary:hover {
-  background: var(--bp-accent-green);
-  border-color: var(--bp-accent-green);
+  background: linear-gradient(135deg, var(--bp-accent-green) 0%, var(--bp-accent-gold) 100%);
+  border-color: var(--bp-accent-gold);
   color: var(--bp-surface);
 }
 
